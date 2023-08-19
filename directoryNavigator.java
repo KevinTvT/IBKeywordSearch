@@ -2,33 +2,54 @@ import java.io.*;
 import java.util.*;
 
 public class directoryNavigator {
-    private static String home = System.getProperty("user.home");
-    private static File resFolder = new File(home+"/Downloads/IBKeywordSearchResources");
-    private static File curFolder;
 
-    public static void main(String[] args){
+    private static String home;
+    private static File resFolder;
+    private static File curFolder;
+    private static String PATH;
+
+    public directoryNavigator(){
+        home = System.getProperty("user.home");
+        PATH = home+"/Downloads/IBKeywordSearchResources";
+        resFolder = new File(PATH);
+        if(resFolder.list() == null) { System.out.println("EXCEPTION THROWN"); throw new NullPointerException("FOLDER NOT FOUND"); }
+    }
+
+    public void main(String[] args){
         getSubjectNames();
         curFolder = new File(home+"/Downloads/IBKeywordSearchResources/Biology");
         getTestNames();
     }
-    public static ArrayList<String> getSubjectNames(){
+    public ArrayList<String> getSubjectNames(){
         ArrayList<String> subjectNames = new ArrayList<String>();
         for(File x: resFolder.listFiles()){
-            subjectNames.add(x.getName());
+            if(!x.getName().equals(".DS_Store"))
+                subjectNames.add(x.getName());
         } 
         return subjectNames;
     }
-    public static ArrayList<String> getTestNames(){
+    public ArrayList<String> getTestNames(){
         ArrayList<String> testNames = new ArrayList<String>();
-;        for(File x: curFolder.listFiles()){
-            testNames.add(x.getName());
-        }
+        if(curFolder != null){
+            for(File x: curFolder.listFiles()){
+                testNames.add(x.getName());
+            }
+        } else System.out.println("CURRENT FOLDER IS NOT SET");
         return testNames;
     }
 
-    public static File setCurFolder(File folderName){
-        curFolder = folderName;
+    //GETTERS AND SETTERS
+    public File getCurFolder() { return curFolder; }
+
+    public File setCurFolder(String folderName){
+        curFolder = new File(PATH + "/" + folderName);
+        //System.out.println("Setting Current Folder");
+        // System.out.println("current folder is: " + curFolder.getName());
+        // System.out.println("current folder path: " + curFolder.getAbsolutePath());
         return curFolder;
     }
 
+    public File getResFolder() { return resFolder; }
+
+    public String getSubjectPATH() { return curFolder.getAbsolutePath(); }
 }
