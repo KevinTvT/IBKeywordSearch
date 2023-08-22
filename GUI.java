@@ -53,9 +53,14 @@ public class GUI extends JFrame {
                 HashMap<String, ArrayList<String>> questions = new HashMap<String, ArrayList<String>>();
                 
                 for(int i = 0; i < tests.size(); i++){
+                    // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+                    
                     // System.out.println(tests);
                     File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
                     String text = "";
+                    
+                    // System.out.println(test.getName());
+
                     //Getting the text from the file
                     try{
                         PDDocument document =  Loader.loadPDF(test);
@@ -64,6 +69,7 @@ public class GUI extends JFrame {
                     } catch (IOException ioException) { System.out.println(ioException); }
                     
                     // System.out.println(text.indexOf("  "));
+
                     //Removes extra whitespace
                     while(text.indexOf("  ") != -1) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
 
@@ -71,17 +77,19 @@ public class GUI extends JFrame {
 
                     questionFinder qFind = new questionFinder();
                     questions.put(test.getName(), qFind.findQuestion(text, searchTerm));
-                
                 }
-                System.out.println(questions);
-                System.out.println("HELLO?");
-                // System.out.println(questions.get("2016Nov_Computer_science_paper_3__HL_Spanish.pdf"));
+
+                System.out.println("HELLO!!! \n\n\n\n\n");
             }
         });
-
+        
         searchRow.add(searchBox);
         searchRow.add(searchButton);
 
+        // System.out.println("HELLO!!!!! \n\n\n\n\n\n\n");
+        // System.out.println(questions);
+        // System.out.println(questions.get("2016Nov_Computer_science_paper_3__HL_Spanish.pdf"));
+        
         return searchRow;
     }
 
@@ -89,7 +97,7 @@ public class GUI extends JFrame {
         GUI window = new GUI();
         window.setLayout(new GridLayout(4, 1));
 
-        window.setBounds(400, 400, 800, 200);
+        window.setBounds(400, 400, 400, 500);
         window.setDefaultCloseOperation(EXIT_ON_CLOSE);
         window.setResizable(false);
     
