@@ -38,6 +38,20 @@ public class GUI extends JFrame {
         return list;
     }
 
+    public void foundPapers(ArrayList<paper> papers){
+        ArrayList<String[]> paperOnes = new ArrayList<String[]>();
+        ArrayList<String[]> paperTwos = new ArrayList<String[]>();
+        ArrayList<String[]> paperThrees = new ArrayList<String[]>();
+
+        for(paper x: papers){
+            
+        }
+
+
+        
+    }
+
+
     public static Container createSearchRow(){
         Container searchRow = new Container();
         searchRow.setLayout(new GridLayout(1, 2));
@@ -50,7 +64,8 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e){
                 String searchTerm = searchBox.getText();
                 ArrayList<String> tests = dirNav.getTestNames();
-                HashMap<String, ArrayList<String>> questions = new HashMap<String, ArrayList<String>>();
+                HashMap<paper, ArrayList<String>> questions = new HashMap<paper, ArrayList<String>>();
+
                 
                 for(int i = 0; i < tests.size()-1; i++){
                     // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
@@ -59,6 +74,7 @@ public class GUI extends JFrame {
                     File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
                     String text = "";
                     
+                    // Skips if its a case study or the hidden folder with metadata for folder
                     if(test.getName().indexOf("case") != -1 || test.getName().indexOf(".DS_Store") != -1) continue;
                     
                     // System.out.println(test.getName());
@@ -78,11 +94,12 @@ public class GUI extends JFrame {
                     // System.out.println(text);
 
                     questionFinder qFind = new questionFinder();
+                    paper testPaper = new paper(test.getName());
                     // System.out.println(test.getName());
                 
                     ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
                     if(testQuestion.size() != 0){
-                        questions.put(test.getName(), testQuestion);
+                        questions.put(testPaper, testQuestion);
                     }
                     // System.out.println("HELLO!!! \n\n\n\n\n");
 
