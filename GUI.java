@@ -102,6 +102,7 @@ public class GUI extends JFrame {
                 
                     ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
                     if(testQuestion.size() != 0){
+                        System.out.println(testQuestion);
                         questions.put(testPaper, testQuestion);
                     }
                     // System.out.println("HELLO!!! \n\n\n\n\n");
