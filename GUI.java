@@ -39,12 +39,15 @@ public class GUI extends JFrame {
     }
 
     public void foundPapers(ArrayList<paper> papers){
-        ArrayList<String[]> paperOnes = new ArrayList<String[]>();
-        ArrayList<String[]> paperTwos = new ArrayList<String[]>();
-        ArrayList<String[]> paperThrees = new ArrayList<String[]>();
+        ArrayList<paper[]> paperOnes = new ArrayList<paper[]>();
+        ArrayList<paper[]> paperTwos = new ArrayList<paper[]>();
+        ArrayList<paper[]> paperThrees = new ArrayList<paper[]>();
+
+        
 
         for(paper x: papers){
-            
+
+            // if (x.getPaper() == 1) paperOnes.add();
         }
 
 
