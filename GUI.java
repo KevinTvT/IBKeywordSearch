@@ -78,7 +78,7 @@ public class GUI extends JFrame {
                     // System.out.println(text);
 
                     questionFinder qFind = new questionFinder();
-                    System.out.println(test.getName());
+                    // System.out.println(test.getName());
                 
                     ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
                     if(testQuestion.size() != 0){

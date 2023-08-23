@@ -22,8 +22,8 @@ public class questionFinder {
             } catch (IndexOutOfBoundsException e) {
                 //Tests the last questions
                 String num = String.valueOf(x);
-                System.out.println("\n\n index of " + num + ". : " + text.indexOf(num + ". \n\n"));
-                System.out.println(text.substring(text.indexOf(num + ". "))); 
+                // System.out.println("\n\n index of " + num + ". : " + text.indexOf(num + ". \n\n"));
+                // System.out.println(text.substring(text.indexOf(num + ". "))); 
                 if (text.substring(text.indexOf(num + ". ")).indexOf(searchTerm) != -1) {
                    questions.add(text.substring(text.indexOf(num + ". ")));
                 }
