@@ -52,12 +52,14 @@ public class GUI extends JFrame {
                 ArrayList<String> tests = dirNav.getTestNames();
                 HashMap<String, ArrayList<String>> questions = new HashMap<String, ArrayList<String>>();
                 
-                for(int i = 0; i < tests.size(); i++){
+                for(int i = 0; i < tests.size()-1; i++){
                     // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
                     
                     // System.out.println(tests);
                     File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
                     String text = "";
+                    
+                    if(test.getName().indexOf("case") != -1 || test.getName().indexOf(".DS_Store") != -1) continue;
                     
                     // System.out.println(test.getName());
 
@@ -76,10 +78,16 @@ public class GUI extends JFrame {
                     // System.out.println(text);
 
                     questionFinder qFind = new questionFinder();
-                    questions.put(test.getName(), qFind.findQuestion(text, searchTerm));
+                    System.out.println(test.getName());
+                
+                    ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
+                    if(testQuestion.size() != 0){
+                        questions.put(test.getName(), testQuestion);
+                    }
+                    // System.out.println("HELLO!!! \n\n\n\n\n");
+
                 }
 
-                System.out.println("HELLO!!! \n\n\n\n\n");
             }
         });
         
