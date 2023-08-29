@@ -32,6 +32,7 @@ public class directoryNavigator {
         ArrayList<String> testNames = new ArrayList<String>();
         if(curFolder != null){
             for(File x: curFolder.listFiles()){
+                if(x.getName().equals(".DS_STORE")) continue;
                 testNames.add(x.getName());
             }
         } else System.out.println("CURRENT FOLDER IS NOT SET");

@@ -44,15 +44,16 @@ public class paper {
         else if(FILEName.indexOf("paper_2") != -1 || FILEName.indexOf("p2") != -1) paper = 2;
         else if(FILEName.indexOf("paper_3") != -1 || FILEName.indexOf("p3") != -1) paper = 3;
 
-        if(FILEName.indexOf("markscheme") != -1 || FILEName.indexOf("Marks") != -1) mrkScheme = false;
-        else mrkScheme = true;
+        if(FILEName.indexOf("markscheme") != -1 || FILEName.indexOf("marks") != -1) mrkScheme = true;
+        else mrkScheme = false;
 
     }
 
     public boolean isLater(paper paper1){
         if(this.year != paper1.getYear()) return this.year > paper1.getYear();
         else if(this.month != paper1.getMonth()) return this.month > paper1.getMonth();
-        return this.level > paper1.getLevel();
+        else if(this.level != paper1.getLevel()) return this.level > paper1.getLevel();
+        return otherIsMrkScheme(paper1);
     }
 
     public boolean otherIsMrkScheme(paper p){

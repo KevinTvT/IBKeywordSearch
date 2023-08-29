@@ -38,20 +38,45 @@ public class GUI extends JFrame {
         return list;
     }
 
-    public void foundPapers(ArrayList<paper> papers){
-        ArrayList<paper[]> paperOnes = new ArrayList<paper[]>();
-        ArrayList<paper[]> paperTwos = new ArrayList<paper[]>();
-        ArrayList<paper[]> paperThrees = new ArrayList<paper[]>();
+    public static void foundPapers(ArrayList<paper> papers){
+        // System.out.println("HELLO \n\n\n\n\n\n\n\n");
+        ArrayList<paper>[] sepPapers = new ArrayList[6];
 
-        
+        // for(paper x: papers){
+        //     System.out.println(x.getName());
+        // }
 
-        for(paper x: papers){
+        mergeSortPaper sorter = new mergeSortPaper();
 
-            // if (x.getPaper() == 1) paperOnes.add();
+        //initializing separated papers and organized papers
+        for(int x = 0; x < sepPapers.length; x++){
+            sepPapers[x] = new ArrayList<>();
         }
 
 
-        
+        for(paper x: papers){
+            if(x.isMrkScheme()) {
+                sepPapers[x.getPaper()+2].add(x);
+            }
+            else sepPapers[x.getPaper()-1].add(x);
+        }
+
+        // System.out.println(sepPapers);
+        // for(paper x: sepPapers[0]){
+        //     System.out.println(x.getName());
+        // }
+
+        for(int x = 0; x < sepPapers.length; x++){
+            sepPapers[x] = sorter.startPap(sepPapers[x]);
+        }
+
+        for(int y = 0; y < sepPapers.length; y++){    
+            System.out.println("Paper: " + (y+1));
+            for(paper x: sepPapers[y]){
+                System.out.println(x.getName());
+            }
+            System.out.println();
+        }
     }
 
 
@@ -62,55 +87,57 @@ public class GUI extends JFrame {
         JTextField searchBox = new JTextField("");
         JButton searchButton = new JButton("Search");
         //CREATING SEARCH BUTTON
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e){
-                String searchTerm = searchBox.getText();
-                ArrayList<String> tests = dirNav.getTestNames();
-                HashMap<paper, ArrayList<String>> questions = new HashMap<paper, ArrayList<String>>();
+            searchButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    String searchTerm = searchBox.getText();
+                    ArrayList<String> tests = dirNav.getTestNames();
+                    HashMap<paper, ArrayList<String>> questions = new HashMap<paper, ArrayList<String>>();
 
-                
-                for(int i = 0; i < tests.size()-1; i++){
-                    // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
                     
-                    // System.out.println(tests);
-                    File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
-                    String text = "";
+                    for(int i = 0; i < tests.size()-1; i++){
+                        // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+                        
+                        // System.out.println(tests);
+                        File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
+                        String text = "";
+                        
+                        // Skips if its a case study or the hidden folder with metadata for folder
+                        if(test.getName().indexOf("case") != -1 || test.getName().indexOf(".DS_Store") != -1) continue;
+                        
+                        // System.out.println(test.getName());
+
+                        //Getting the text from the file
+                        try{
+                            PDDocument document =  Loader.loadPDF(test);
+                            PDFTextStripper pdfStripper = new PDFTextStripper();
+                            text = pdfStripper.getText(document);
+                        } catch (IOException ioException) { System.out.println(ioException); }
+                        
+                        // System.out.println(text.indexOf("  "));
+
+                        //Removes extra whitespace
+                        while(text.indexOf("  ") != -1) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
+
+                        // System.out.println(text);
+
+                        questionFinder qFind = new questionFinder();
+                        paper testPaper = new paper(test.getName());
+                        // System.out.println(test.getName());
                     
-                    // Skips if its a case study or the hidden folder with metadata for folder
-                    if(test.getName().indexOf("case") != -1 || test.getName().indexOf(".DS_Store") != -1) continue;
-                    
-                    // System.out.println(test.getName());
-
-                    //Getting the text from the file
-                    try{
-                        PDDocument document =  Loader.loadPDF(test);
-                        PDFTextStripper pdfStripper = new PDFTextStripper();
-                        text = pdfStripper.getText(document);
-                    } catch (IOException ioException) { System.out.println(ioException); }
-                    
-                    // System.out.println(text.indexOf("  "));
-
-                    //Removes extra whitespace
-                    while(text.indexOf("  ") != -1) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
-
-                    // System.out.println(text);
-
-                    questionFinder qFind = new questionFinder();
-                    paper testPaper = new paper(test.getName());
-                    // System.out.println(test.getName());
-                
-                    ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
-                    if(testQuestion.size() != 0){
-                        System.out.println(testQuestion);
-                        questions.put(testPaper, testQuestion);
+                        ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
+                        if(testQuestion.size() != 0){
+                            // System.out.println(testQuestion);
+                            questions.put(testPaper, testQuestion);
+                        }
+                        // System.out.println("HELLO!!! \n\n\n\n\n");
                     }
-                    // System.out.println("HELLO!!! \n\n\n\n\n");
+                    if(questions.size() == 0) throw new NullPointerException("ERROR: Keyword was not found in any test");
+                    try{ foundPapers(new ArrayList<paper>(questions.keySet())); }
+                    catch(NullPointerException err){ System.out.println(err); }
 
                 }
-
-            }
-        });
+            });
         
         searchRow.add(searchBox);
         searchRow.add(searchButton);
