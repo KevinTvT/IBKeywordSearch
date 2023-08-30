@@ -38,7 +38,18 @@ public class GUI extends JFrame {
         return list;
     }
 
-    public static void foundPapers(ArrayList<paper> papers){
+    public static paper getMrkScheme(ArrayList<String> tests, paper test){
+        for(String t: tests){
+            if(t.toLowerCase().contains("marks")){
+                paper markScheme = new paper(t);
+                if(test.otherIsMrkScheme(markScheme))
+                    return markScheme;
+            }
+        }
+        throw new NullPointerException("ERROR: Could not find the Markscheme of this paper" + test.getName());
+    }
+
+    public static void createPapersWindow(ArrayList<paper> papers){
         // System.out.println("HELLO \n\n\n\n\n\n\n\n");
         ArrayList<paper>[] sepPapers = new ArrayList[6];
 
@@ -77,6 +88,13 @@ public class GUI extends JFrame {
             }
             System.out.println();
         }
+
+        Container c = new Container();
+        c.setLayout(new GridLayout(4, 3));
+        c.add(new JLabel("Paper 1s"));
+        c.add(new JLabel("Paper 2s"));
+        c.add(new JLabel("Paper 3s"));
+        
     }
 
 
@@ -103,7 +121,8 @@ public class GUI extends JFrame {
                         String text = "";
                         
                         // Skips if its a case study or the hidden folder with metadata for folder
-                        if(test.getName().indexOf("case") != -1 || test.getName().indexOf(".DS_Store") != -1) continue;
+                        // System.out.println(test.getName() + ", "+ (test.getName().toLowerCase().indexOf("marks") != -1));
+                        if(test.getName().contains("case") || test.getName().contains(".DS_Store") || test.getName().toLowerCase().contains("marks")) continue;
                         
                         // System.out.println(test.getName());
 
@@ -117,7 +136,7 @@ public class GUI extends JFrame {
                         // System.out.println(text.indexOf("  "));
 
                         //Removes extra whitespace
-                        while(text.indexOf("  ") != -1) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
+                        while(text.contains("  ")) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
 
                         // System.out.println(text);
 
@@ -129,11 +148,17 @@ public class GUI extends JFrame {
                         if(testQuestion.size() != 0){
                             // System.out.println(testQuestion);
                             questions.put(testPaper, testQuestion);
+                            try{
+                                paper mrkScheme = getMrkScheme(tests, testPaper);
+                                questions.put(mrkScheme, testQuestion);
+                            }catch(NullPointerException err){
+                                System.out.println(err);
+                            }
                         }
                         // System.out.println("HELLO!!! \n\n\n\n\n");
                     }
                     if(questions.size() == 0) throw new NullPointerException("ERROR: Keyword was not found in any test");
-                    try{ foundPapers(new ArrayList<paper>(questions.keySet())); }
+                    try{ createPapersWindow(new ArrayList<paper>(questions.keySet())); }
                     catch(NullPointerException err){ System.out.println(err); }
 
                 }
