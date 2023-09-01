@@ -52,5 +52,5 @@ public class directoryNavigator {
 
     public File getResFolder() { return resFolder; }
 
-    public String getSubjectPATH() { return curFolder.getAbsolutePath(); }
+    public String getCurPATH() { return curFolder.getAbsolutePath(); }
 }

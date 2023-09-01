@@ -11,6 +11,8 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 public class GUI extends JFrame {
     private static directoryNavigator dirNav;
+    private static String searchTerm;
+    private static String subjectName;
 
     public GUI(){
         //Set up the window
@@ -31,7 +33,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e){
                 JComboBox temp = (JComboBox) e.getSource();
-                String subjectName = (String) temp.getSelectedItem();
+                subjectName = (String) temp.getSelectedItem();
                 dirNav.setCurFolder(subjectName);
             }
         });
@@ -89,12 +91,63 @@ public class GUI extends JFrame {
             System.out.println();
         }
 
-        Container c = new Container();
-        c.setLayout(new GridLayout(4, 3));
-        c.add(new JLabel("Paper 1s"));
-        c.add(new JLabel("Paper 2s"));
-        c.add(new JLabel("Paper 3s"));
+        //Creating three windows for the three papers
+        for(int x = 0; x < sepPapers.length/2; x++){
+            if(sepPapers[x].size() == 0) continue;
+            int xIndex = 800 + 300*x;
+            makePaperWindow("Paper " + String.valueOf(x+1), sepPapers[x], sepPapers[x+3], xIndex, 400);
+        }
+        // }
+        // makePaperWindow("Paper 2", sepPapers[1], sepPapers[4], 1100, 400);
+        // makePaperWindow("Paper 3", sepPapers[2], sepPapers[5], 1400, 400);
         
+        
+    }
+
+    public static JFrame makePaperWindow(String paperNumber, ArrayList<paper> papers, ArrayList<paper> mrkSchemes, int x, int y){
+        JFrame paperWindow = new JFrame("Search for \"" + searchTerm + "\" in " + subjectName);
+        paperWindow.setLayout(new FlowLayout());
+        paperWindow.add(new JLabel(paperNumber + ": "));
+        // JPanel paper = makePaperPanel(papers);
+        // JScrollPane paperScroll = new JScrollPane(paper);
+        // paperWindow.add(paperScroll);
+        paperWindow.add(makePaperPanel(papers));
+        paperWindow.add(new JLabel("MarkSchemes: "));
+        paperWindow.add(makePaperPanel(mrkSchemes));
+        // JPanel mrkScheme = makePaperPanel(mrkSchemes);
+        // JScrollPane mrkSchemeScroll = new JScrollPane(mrkScheme);
+        // paperWindow.add(mrkSchemeScroll);
+
+        paperWindow.setBounds(x, y, 300, 400);
+        paperWindow.dispatchEvent(new WindowEvent(paperWindow, WindowEvent.WINDOW_CLOSING));
+        paperWindow.setResizable(false);
+        paperWindow.setVisible(true);
+
+
+        return paperWindow;
+    }
+
+    public static JScrollPane makePaperPanel(ArrayList<paper> papers){
+        JPanel paperPanel = new JPanel();
+        paperPanel.setLayout(new GridLayout(papers.size(), 1));
+        
+        for(paper x: papers){
+            JLabel paperLink = new JLabel(x.getName());
+            paperLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            paperLink.addMouseListener(new MouseAdapter(){
+                public void mouseClicked(MouseEvent e){
+                    if (e.getClickCount() > 0){
+                        File test = new File(dirNav.getCurPATH() + "/" + x.getName());
+                        try{ Desktop.getDesktop().open(test); } 
+                        catch (IOException err) { System.out.println(err); }
+                    }
+                }
+            });
+            paperPanel.add(paperLink);
+        }
+        JScrollPane scrollPanel = new JScrollPane(paperPanel);
+        return scrollPanel;
+        // return paperPanel;
     }
 
 
@@ -108,7 +161,7 @@ public class GUI extends JFrame {
             searchButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    String searchTerm = searchBox.getText();
+                    searchTerm = searchBox.getText().toLowerCase();
                     ArrayList<String> tests = dirNav.getTestNames();
                     HashMap<paper, ArrayList<String>> questions = new HashMap<paper, ArrayList<String>>();
 
@@ -117,7 +170,7 @@ public class GUI extends JFrame {
                         // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
                         
                         // System.out.println(tests);
-                        File test = new File(dirNav.getSubjectPATH() + "/" + tests.get(i));
+                        File test = new File(dirNav.getCurPATH() + "/" + tests.get(i));
                         String text = "";
                         
                         // Skips if its a case study or the hidden folder with metadata for folder
