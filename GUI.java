@@ -85,6 +85,8 @@ public class GUI extends JFrame {
             sepPapers[x] = sorter.startPap(sepPapers[x]);
         }
 
+        //TESTING TO SEE IF TEH THING SWORKS
+
         for(int y = 0; y < sepPapers.length; y++){    
             System.out.println("Paper: " + (y+1));
             for(paper x: sepPapers[y]){
