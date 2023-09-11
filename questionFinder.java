@@ -19,7 +19,7 @@ public class questionFinder {
                 if (currentQuestion.indexOf(searchTerm) != -1) {
                     // Changing from returning the entire question to returning just the question number
                     // questions.add(currentQuestion);
-                    questions.add(currentQuestion.substring(0, num.length() + 1));
+                    questions.add(currentQuestion.substring(0, num.length()));
                 }
             } catch (IndexOutOfBoundsException e) {
                 //Tests the last questions
@@ -29,7 +29,7 @@ public class questionFinder {
                     // Changing from returning the entire question to returning just the question number
                     // questions.add(text.substring(text.indexOf(num + ". ")));
                     String currentQuestion = text.substring(text.indexOf(num+ ". "));
-                    questions.add(currentQuestion.substring(0, num.length() + 1));
+                    questions.add(currentQuestion.substring(0, num.length()));
                 }
                 break;
             }

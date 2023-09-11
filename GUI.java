@@ -13,6 +13,7 @@ public class GUI extends JFrame {
     private static directoryNavigator dirNav;
     private static String searchTerm;
     private static String subjectName;
+    private static HashMap<paper, ArrayList<String>> questions;
 
     public GUI(){
         //Set up the window
@@ -25,6 +26,7 @@ public class GUI extends JFrame {
             System.out.println(e);
             System.exit(0);
         }
+        questions = new HashMap<paper, ArrayList<String>>();
     }
 
     public static JComboBox createComboBox (String[] objects){
@@ -91,12 +93,20 @@ public class GUI extends JFrame {
             System.out.println();
         }
 
-        //Creating three windows for the three papers
+        //Creating three windows for the three papers and also testQuestionOutputWindow
+        JFrame questionNumber = new JFrame("Question Number");
+        JLabel numTxtField = new JLabel("Question Numbers will appear here");
+        questionNumber.add(numTxtField);
+        questionNumber.setBounds(800, 800, 200, 100);
+        questionNumber.dispatchEvent(new WindowEvent(questionNumber, WindowEvent.WINDOW_CLOSING));
+        questionNumber.setVisible(true);
+
         for(int x = 0; x < sepPapers.length/2; x++){
             if(sepPapers[x].size() == 0) continue;
             int xIndex = 800 + 300*x;
-            makePaperWindow("Paper " + String.valueOf(x+1), sepPapers[x], sepPapers[x+3], xIndex, 400);
+            makePaperWindow("Paper " + String.valueOf(x+1), sepPapers[x], sepPapers[x+3], xIndex, 400, numTxtField);
         }
+
         // }
         // makePaperWindow("Paper 2", sepPapers[1], sepPapers[4], 1100, 400);
         // makePaperWindow("Paper 3", sepPapers[2], sepPapers[5], 1400, 400);
@@ -104,48 +114,76 @@ public class GUI extends JFrame {
         
     }
 
-    public static JFrame makePaperWindow(String paperNumber, ArrayList<paper> papers, ArrayList<paper> mrkSchemes, int x, int y){
+    public static GridBagConstraints createConstraints(int gridy, int anchor, int ipady){
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = gridy;
+        c.anchor = anchor;
+        c.ipadx = 400;
+        c.ipady = ipady;
+        return c;
+    }
+
+    public static void makePaperWindow(String paperNumber, ArrayList<paper> papers, ArrayList<paper> mrkSchemes, int x, int y, JLabel numTxtField){
         JFrame paperWindow = new JFrame("Search for \"" + searchTerm + "\" in " + subjectName);
-        paperWindow.setLayout(new FlowLayout());
-        paperWindow.add(new JLabel(paperNumber + ": "));
+        // paperWindow.setLayout(new FlowLayout());
+        paperWindow.setLayout(new GridBagLayout());
+        GridBagConstraints cTopAnchor = createConstraints(0, GridBagConstraints.PAGE_START, 0);
+        paperWindow.add(new JLabel(paperNumber + ": "), cTopAnchor);
         // JPanel paper = makePaperPanel(papers);
         // JScrollPane paperScroll = new JScrollPane(paper);
         // paperWindow.add(paperScroll);
-        paperWindow.add(makePaperPanel(papers));
-        paperWindow.add(new JLabel("MarkSchemes: "));
-        paperWindow.add(makePaperPanel(mrkSchemes));
+        JScrollPane paperScroll = makePaperPanel(papers, numTxtField);
+        GridBagConstraints cNoAnchor1 = createConstraints(1, GridBagConstraints.CENTER, (int) paperScroll.getSize().getHeight());
+        paperWindow.add(paperScroll, cNoAnchor1);
+
+        GridBagConstraints cMidAnchor = createConstraints(2, GridBagConstraints.CENTER, 0);
+        paperWindow.add(new JLabel("MarkSchemes: "), cMidAnchor);
+
+        JScrollPane mrkSchemeScroll = makePaperPanel(mrkSchemes, numTxtField);
+        GridBagConstraints cNoAnchor2 = createConstraints(3, GridBagConstraints.CENTER, (int) mrkSchemeScroll.getSize().getHeight());
+        paperWindow.add(mrkSchemeScroll, cNoAnchor2);
         // JPanel mrkScheme = makePaperPanel(mrkSchemes);
         // JScrollPane mrkSchemeScroll = new JScrollPane(mrkScheme);
         // paperWindow.add(mrkSchemeScroll);
 
         paperWindow.setBounds(x, y, 300, 400);
         paperWindow.dispatchEvent(new WindowEvent(paperWindow, WindowEvent.WINDOW_CLOSING));
-        paperWindow.setResizable(false);
+        // paperWindow.setResizable(false);
         paperWindow.setVisible(true);
-
-
-        return paperWindow;
     }
 
-    public static JScrollPane makePaperPanel(ArrayList<paper> papers){
+    public static JScrollPane makePaperPanel(ArrayList<paper> papers, JLabel numTxtField){
         JPanel paperPanel = new JPanel();
         paperPanel.setLayout(new GridLayout(papers.size(), 1));
         
         for(paper x: papers){
             JLabel paperLink = new JLabel(x.getName());
+
+
             paperLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             paperLink.addMouseListener(new MouseAdapter(){
                 public void mouseClicked(MouseEvent e){
                     if (e.getClickCount() > 0){
                         File test = new File(dirNav.getCurPATH() + "/" + x.getName());
+                        numTxtField.setText(String.join(", ", questions.get(x)));
+                        // System.out.println(questions.get(x));
+                        
                         try{ Desktop.getDesktop().open(test); } 
                         catch (IOException err) { System.out.println(err); }
                     }
                 }
             });
+
+            // System.out.println(paperLink.getSize().getHeight());
             paperPanel.add(paperLink);
         }
-        JScrollPane scrollPanel = new JScrollPane(paperPanel);
+        // if(papers.size() > 19) paperPanel.setSize(400, 190);
+        // else paperPanel.setSize(400, papers.size() * 10);
+        JScrollPane scrollPanel = new JScrollPane(paperPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        if(papers.size() > 9) scrollPanel.setSize(400, 150);
+        else scrollPanel.setSize(400, papers.size() * 17);
+        // System.out.println(papers.size() + "*17 = " + scrollPanel.getSize().getHeight());
         return scrollPanel;
         // return paperPanel;
     }
@@ -163,7 +201,7 @@ public class GUI extends JFrame {
                 public void actionPerformed(ActionEvent e){
                     searchTerm = searchBox.getText().toLowerCase();
                     ArrayList<String> tests = dirNav.getTestNames();
-                    HashMap<paper, ArrayList<String>> questions = new HashMap<paper, ArrayList<String>>();
+                    
 
                     
                     for(int i = 0; i < tests.size()-1; i++){
@@ -213,7 +251,6 @@ public class GUI extends JFrame {
                     if(questions.size() == 0) throw new NullPointerException("ERROR: Keyword was not found in any test");
                     try{ createPapersWindow(new ArrayList<paper>(questions.keySet())); }
                     catch(NullPointerException err){ System.out.println(err); }
-
                 }
             });
         
