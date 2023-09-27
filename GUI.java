@@ -8,12 +8,16 @@ import org.apache.pdfbox.Loader;
 // Remeber when exporting as jar file include the imported librar
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.w3c.dom.css.Rect;
 
 public class GUI extends JFrame {
     private static directoryNavigator dirNav;
     private static String searchTerm;
     private static String subjectName;
     private static HashMap<paper, ArrayList<String>> questions;
+    private static GUI window;
+    private static boolean exit;
+    private static JLabel alert;
 
     public GUI(){
         //Set up the window
@@ -190,6 +194,23 @@ public class GUI extends JFrame {
         // return paperPanel;
     }
 
+    public static JFrame createAlertWindow(JFrame mainFrame, String str, int width, int height){
+        JFrame alertWindow = new JFrame("Alert Window");
+        alertWindow.setLayout(new FlowLayout(FlowLayout.CENTER));
+        alert = new JLabel(str);
+        alertWindow.add(alert);
+
+        Dimension size = mainFrame.getSize();
+        
+        alertWindow.setBounds((int)size.getHeight(), (int)size.getWidth(), width, height);
+        alertWindow.setLocationRelativeTo(mainFrame);
+        alertWindow.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
+        alertWindow.setResizable(false);
+        alertWindow.setVisible(true);
+        
+        return alertWindow;
+    }
+
 
     public static Container createSearchRow(){
         Container searchRow = new Container();
@@ -197,62 +218,93 @@ public class GUI extends JFrame {
 
         JTextField searchBox = new JTextField("");
         JButton searchButton = new JButton("Search");
+
         //CREATING SEARCH BUTTON
             searchButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e){
-                    searchTerm = searchBox.getText().toLowerCase();
-                    ArrayList<String> tests = dirNav.getTestNames();
+                    // MULTITHREADINGGGGGG                    
+                    String alertStr = "Loading...";
+                    JFrame alertWindow = createAlertWindow(window, alertStr, 100, 50);
+                    //window.add(obj);
+                    exit = false;
                     
+                    SwingWorker swingWorker = new SwingWorker() {
+                        @Override protected String doInBackground() throws Exception{
+                            searchTerm = searchBox.getText().toLowerCase();
+                            ArrayList<String> tests = dirNav.getTestNames();
+                            
+                            for(int i = 0; i < tests.size()-1; i++){
+                                // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+                                
+                                // System.out.println(tests);
+                                File test = new File(dirNav.getCurPATH() + "/" + tests.get(i));
+                                String text = "";
+                                
+                                // Skips if its a case study or the hidden folder with metadata for folder
+                                // System.out.println(test.getName() + ", "+ (test.getName().toLowerCase().indexOf("marks") != -1));
+                                if(test.getName().contains("case") || test.getName().contains(".DS_Store") || test.getName().toLowerCase().contains("marks")) continue;
+                                
+                                // System.out.println(test.getName());
 
-                    
-                    for(int i = 0; i < tests.size()-1; i++){
-                        // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
-                        
-                        // System.out.println(tests);
-                        File test = new File(dirNav.getCurPATH() + "/" + tests.get(i));
-                        String text = "";
-                        
-                        // Skips if its a case study or the hidden folder with metadata for folder
-                        // System.out.println(test.getName() + ", "+ (test.getName().toLowerCase().indexOf("marks") != -1));
-                        if(test.getName().contains("case") || test.getName().contains(".DS_Store") || test.getName().toLowerCase().contains("marks")) continue;
-                        
-                        // System.out.println(test.getName());
-
-                        //Getting the text from the file
-                        try{
-                            PDDocument document =  Loader.loadPDF(test);
-                            PDFTextStripper pdfStripper = new PDFTextStripper();
-                            text = pdfStripper.getText(document);
-                        } catch (IOException ioException) { System.out.println(ioException); }
-                        
-                        // System.out.println(text.indexOf("  "));
-
-                        //Removes extra whitespace
-                        while(text.contains("  ")) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
-
-                        // System.out.println(text);
-
-                        questionFinder qFind = new questionFinder();
-                        paper testPaper = new paper(test.getName());
-                        // System.out.println(test.getName());
-                    
-                        ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
-                        if(testQuestion.size() != 0){
-                            // System.out.println(testQuestion);
-                            questions.put(testPaper, testQuestion);
-                            try{
-                                paper mrkScheme = getMrkScheme(tests, testPaper);
-                                questions.put(mrkScheme, testQuestion);
-                            }catch(NullPointerException err){
-                                System.out.println(err);
+                                //Getting the text from the file
+                                try{
+                                    PDDocument document =  Loader.loadPDF(test);
+                                    PDFTextStripper pdfStripper = new PDFTextStripper();
+                                    text = pdfStripper.getText(document);
+                                } catch (IOException ioException) { System.out.println(ioException); }
+                                
+                                // System.out.println(text.indexOf("  "));
+                                
+                                //Removes extra whitespace
+                                while(text.contains("  ")) { text = text.substring(0, text.indexOf("  ")) + text.substring(text.indexOf("  ") + 1); }
+                                
+                                // System.out.println(text);
+                                
+                                questionFinder qFind = new questionFinder();
+                                paper testPaper = new paper(test.getName());
+                                // System.out.println(test.getName());
+                                
+                                ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
+                                if(testQuestion.size() != 0){
+                                    // System.out.println(testQuestion);
+                                    questions.put(testPaper, testQuestion);
+                                    try{
+                                        paper mrkScheme = getMrkScheme(tests, testPaper);
+                                        questions.put(mrkScheme, testQuestion);
+                                    }catch(NullPointerException err){
+                                        System.out.println(err);
+                                    }
+                                }
+                                // System.out.println("HELLO!!! \n\n\n\n\n");
                             }
+                            exit = true;
+                            alertWindow.dispose();
+                            return "Finished Execution";
                         }
-                        // System.out.println("HELLO!!! \n\n\n\n\n");
+                    };
+                    swingWorker.execute();
+                    //TODO: make this work
+                    // for(int x = 0; !exit; x++){
+                    //     try{
+                    //         Thread.sleep(300);
+                    //         for(int i = 0; i < x%4; i++) alertStr = alertStr + ".";
+                            // alert.setText(alertStr);
+                    //         alert.setVisible(true);
+                    //         System.out.println(alert.getText());
+                    //         alertStr = "Loading";
+                    //         alertWindow.repaint();
+                    //         alertWindow.revalidate();
+                    //     } catch(InterruptedException err) { System.out.println(err); }
+                    // }
+
+                    while(!exit){}
+
+                    if(questions.size() == 0){ createAlertWindow(window, "Keyword was not found!", 160, 50); } // throw new NullPointerException("ERROR: Keyword was not found in any test");
+                    else{
+                        try{ createPapersWindow(new ArrayList<paper>(questions.keySet())); }
+                        catch(NullPointerException err){ System.out.println(err); }
                     }
-                    if(questions.size() == 0) throw new NullPointerException("ERROR: Keyword was not found in any test");
-                    try{ createPapersWindow(new ArrayList<paper>(questions.keySet())); }
-                    catch(NullPointerException err){ System.out.println(err); }
                 }
             });
         
@@ -267,10 +319,11 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args){
-        GUI window = new GUI();
-        window.setLayout(new GridLayout(4, 1));
+        window = new GUI();
+        window.setLayout(new GridLayout(3, 1));
 
-        window.setBounds(400, 400, 400, 500);
+        Rectangle r = new Rectangle(400, 400, 400, 250);
+        window.setBounds(r);
         window.setDefaultCloseOperation(EXIT_ON_CLOSE);
         window.setResizable(false);
     
@@ -284,6 +337,8 @@ public class GUI extends JFrame {
         //ADDING SEARCH BOX STUFF
         Container searchRow = createSearchRow();
         window.add(searchRow);
+
+        //ADDING INSTRUCTIONS BUTTON
 
         window.setVisible(true);
     }
