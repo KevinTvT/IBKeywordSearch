@@ -19,7 +19,7 @@ Each paper name is a link, to open a pdf click on the paper name and the pdf wil
 
 There is an instructions button that will pop up a tab where users can look at the instructions while using the program.
 
-Before searching a second time REMEBER to delete the tabs containing the test questions from paper 1 to paper 3 because those are not ultimately deleted.
+Before searching a second time REMEMBER to delete the tabs containing the test questions from paper 1 to paper 3 because those are not ultimately deleted.
 
 ## Warning/Errors
 ### If you can't find the keyword in the question
