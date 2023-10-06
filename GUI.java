@@ -1,14 +1,9 @@
 import java.awt.*;
-import java.awt.image.*;
 import java.util.*;
-import java.nio.file.*;
 import java.io.*;
 import java.awt.event.*;
-import java.awt.geom.*;
 
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.imageio.*;
 
 // Remeber when exporting as jar file include the imported librar
 import org.apache.pdfbox.Loader;
@@ -20,7 +15,7 @@ public class GUI extends JFrame {
     private static String searchTerm;
     private static String subjectName;
     private static HashMap<paper, ArrayList<String>> questions;
-    private static GUI window;
+    private static JFrame window;
     private static JLabel alert;
     private static JLabel instructionsLabel;
     private static FileInputStream instructions;
@@ -172,7 +167,7 @@ public class GUI extends JFrame {
     public static JScrollPane makePaperPanel(ArrayList<paper> papers, JLabel numTxtField) {
         JPanel paperPanel = new JPanel();
         paperPanel.setLayout(new GridLayout(papers.size(), 1));
-
+        
         for (paper x : papers) {
             JLabel paperLink = new JLabel(x.getName());
 
@@ -367,7 +362,62 @@ public class GUI extends JFrame {
 
     }
 
-    public static void main(String[] args) {
+    public static void changeFolderAccessed(String folder){
+        JFrame setFolder = new JFrame("Currently access from: ");
+        setFolder.setLayout(new GridBagLayout());
+        GridBagConstraints gBagScroll = createConstraints(0, GridBagConstraints.NORTH, 160);
+        System.out.println("FOLDER: " + folder);
+        dirNav.setResFolder(folder);
+        ArrayList<String> folderNames = dirNav.getSubjectNames();
+
+        JPanel paperPanel = new JPanel();
+        paperPanel.setLayout(new GridLayout(folderNames.size(), 1));
+        
+        for (String x : folderNames) {
+            if(x.substring(0, 1).equals(".")) continue;
+            JLabel paperLink = new JLabel(x);
+            // System.out.println(paperLink.getText());
+            paperLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            paperLink.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() > 0) {
+                        // System.out.println("DOING STUFF");
+                        setFolder.dispose();
+                        changeFolderAccessed(folder + "/" + x);
+                    }
+                }
+            });
+
+            // System.out.println(paperLink.getSize().getHeight());
+            paperPanel.add(paperLink);
+        }
+        // if(papers.size() > 19) paperPanel.setSize(400, 190);
+        // else paperPanel.setSize(400, papers.size() * 10);
+        JScrollPane scrollPanel = new JScrollPane(paperPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPanel.setSize(300, 160);
+        setFolder.add(scrollPanel, gBagScroll);
+
+        JPanel buttonPanel = new JPanel();
+        JButton setButton = new JButton("Done");
+        setButton.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                // System.out.println(dirNav.getResFolder().getName());
+                setFolder.dispose();
+                window.dispose();
+                window = newGUI();
+            }
+        });
+
+        GridBagConstraints gBagButton = createConstraints(1, GridBagConstraints.SOUTH, 40);
+        buttonPanel.add(setButton);
+        setFolder.add(buttonPanel, gBagButton);
+        
+        setFolder.setVisible(true);
+        setFolder.setBounds(450, 425, 300, 200);
+        setFolder.setResizable(false);
+    }
+
+    public static JFrame newGUI() {
         window = new GUI();
         window.setLayout(new GridLayout(3, 1));
 
@@ -418,14 +468,13 @@ public class GUI extends JFrame {
                 // System.out.println(tempImg);
                 //USING HTML TO ADD IMAGE DOESn'T WORK?
                 // instructionsStr = instructionsStr.substring(0, instructionsStr.indexOf("![")) + "<img src=" + instructionsStr.substring(instructionsStr.indexOf("(") + 1, instructionsStr.indexOf(")")) + " alt=" + instructionsStr.substring(instructionsStr.indexOf("[")+1, instructionsStr.indexOf("]")) + ">" + instructionsStr.substring(instructionsStr.indexOf(")")+1);
-                instructionsStr = instructionsStr.substring(0, instructionsStr.indexOf("![")) + instructionsStr.substring(instructionsStr.indexOf("]")+1);
+                instructionsStr = instructionsStr.substring(0, instructionsStr.indexOf("![")) + instructionsStr.substring(instructionsStr.indexOf(")")+1);
                 
             }
          }
 
         //Text Wrapping needs to be formatted in html
         instructionsStr = String.format("<html><div WIDTH=%d>%s</div></html>", 340, instructionsStr);
-
 
         instructionsLabel = new JLabel(instructionsStr);
         // System.out.println(instructionsLabel.getText());
@@ -447,10 +496,30 @@ public class GUI extends JFrame {
                 instructionsFrame.setVisible(true);
             }
         });
+        JPanel lastPanel = new JPanel();
+
         JPanel instructionsPanel = new JPanel();
         instructionsPanel.add(instructionsButton);
-        window.add(instructionsPanel);
+
+        JPanel folderPanel = new JPanel();
+        JButton changeFolder = new JButton("Click to Change Folder");
+        changeFolder.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e){
+                changeFolderAccessed(dirNav.getHome());
+            }
+        });
+        folderPanel.add(changeFolder);
+
+        lastPanel.add(instructionsPanel);
+        lastPanel.add(folderPanel);
+
+        window.add(lastPanel);
 
         window.setVisible(true);
+        return window;
+    }
+
+    public static void main(String[] args){
+        newGUI();
     }
 }
