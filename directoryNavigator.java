@@ -21,6 +21,15 @@ public class directoryNavigator {
         if(resFolder.list() == null) { System.out.println("EXCEPTION THROWN"); throw new NullPointerException("FOLDER NOT FOUND"); }
     }
 
+    public directoryNavigator(boolean folderError){
+        readMe = new File("README.md");
+        home = System.getProperty("user.home");
+        try{ readMeStr = Files.readString(readMe.toPath()); }
+        catch(IOException e) { System.out.println(e); }
+        PATH = folderError ? home : home + "/" + readMeStr.substring(readMeStr.indexOf(": ") + 2, readMeStr.indexOf("~"));
+        resFolder = new File(PATH);
+    }
+
     public void main(String[] args){
         getSubjectNames();
         curFolder = new File(home+"/Downloads/IBKeywordSearchResources/Biology");
@@ -31,11 +40,26 @@ public class directoryNavigator {
         System.out.println("PATH: " + resFolder.getPath());
         ArrayList<String> subjectNames = new ArrayList<String>();
         for(File x: resFolder.listFiles()){
-            if(!x.getName().substring(0, 1).equals("."))
+            if(!x.isHidden())
                 subjectNames.add(x.getName());
         } 
         return subjectNames;
     }
+
+    public String getFolderNames(){
+        System.out.println("FOLDER PATH: " + resFolder.getPath());
+        BST tree = new BST();
+        for(File x: resFolder.listFiles()){
+            System.out.println(x.getName());
+            System.out.println(x.isDirectory());
+            System.out.println(x.isHidden());
+            // System.out.println("%s: isDirectory -> %s; isHidden -> %s".format(x.getName(), x.isDirectory(), x.isHidden()));
+            if(!x.isDirectory() || x.isHidden()) continue;
+            tree.insert(x.getName());
+        }
+        return tree.inorder();
+    }
+
     public ArrayList<String> getTestNames(){
         ArrayList<String> testNames = new ArrayList<String>();
         if(curFolder != null){

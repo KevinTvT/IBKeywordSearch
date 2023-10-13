@@ -31,7 +31,9 @@ public class GUI extends JFrame {
             dirNav = new directoryNavigator();
         } catch (NullPointerException e) {
             System.out.println(e);
-            System.exit(0);
+            // creates a non null dirNav without throwing an error
+            dirNav = new directoryNavigator(false);
+            changeFolderAccessed(dirNav.getHome());
         }
         questions = new HashMap<paper, ArrayList<String>>();
     }
@@ -363,18 +365,17 @@ public class GUI extends JFrame {
     }
 
     public static void changeFolderAccessed(String folder){
-        JFrame setFolder = new JFrame("Currently access from: ");
+        JFrame setFolder = new JFrame("Currently access from: " + folder);
         setFolder.setLayout(new GridBagLayout());
         GridBagConstraints gBagScroll = createConstraints(0, GridBagConstraints.NORTH, 160);
         System.out.println("FOLDER: " + folder);
         dirNav.setResFolder(folder);
-        ArrayList<String> folderNames = dirNav.getSubjectNames();
+        String[] folderNames = dirNav.getFolderNames().split(",");
 
         JPanel paperPanel = new JPanel();
-        paperPanel.setLayout(new GridLayout(folderNames.size(), 1));
+        paperPanel.setLayout(new GridLayout(folderNames.length, 1));
         
         for (String x : folderNames) {
-            if(x.substring(0, 1).equals(".")) continue;
             JLabel paperLink = new JLabel(x);
             // System.out.println(paperLink.getText());
             paperLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

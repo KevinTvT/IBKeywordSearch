@@ -4,9 +4,9 @@
 This Project was created to help teachers in the IB program find questions from past IB tests so that they can create tests more efficiently. 
 
 ## Setup
-Download the papers and insert them into a folder named whatever the subject name is and put it inside a "IBKeywordSearchResources" inside your Downloads folder. Or alternatively you can place the folder anywhere and change the location the folder access to that location.
+Download the papers and insert them into a folder named whatever the subject name is and put it inside a "IBKeywordSearchResources" folder inside your Downloads folder. Or alternatively you can place the folder anywhere and change the location the folder access to that location.
 
-Right Now the folder it is accessing to get the files are: /Downloads/IBKeywordSearchResources~
+Right Now the folder it is accessing to get the files are: t~
 
 Download the project folder as a .zip file or download the code files and either run the .zip file by double clicking on it or running the main method of the "GUI.java" file. 
 
