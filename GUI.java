@@ -117,7 +117,6 @@ public class GUI extends JFrame {
             int xIndex = 800 + 300 * x;
             makePaperWindow("Paper " + String.valueOf(x + 1), sepPapers[x], sepPapers[x + 3], xIndex, 400, numTxtField);
         }
-
         // }
         // makePaperWindow("Paper 2", sepPapers[1], sepPapers[4], 1100, 400);
         // makePaperWindow("Paper 3", sepPapers[2], sepPapers[5], 1400, 400);
@@ -284,10 +283,11 @@ public class GUI extends JFrame {
 
                             questionFinder qFind = new questionFinder();
                             paper testPaper = new paper(test.getName());
+
                             // System.out.println(test.getName());
 
                             ArrayList<String> testQuestion = qFind.findQuestion(text, searchTerm);
-                            if (testQuestion.size() != 0) {
+                            if (testQuestion.size() != 0 && questions.get(testPaper) == null) {
                                 // System.out.println(testQuestion);
                                 questions.put(testPaper, testQuestion);
                                 try {
@@ -383,8 +383,15 @@ public class GUI extends JFrame {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() > 0) {
                         // System.out.println("DOING STUFF");
+                        SwingWorker swingWorker = new SwingWorker(){
+                            @Override
+                            protected String doInBackground() throws Exception{
+                                changeFolderAccessed(folder + "/" + x);
+                                return "Finished Successfully";
+                            }
+                        };
+                        swingWorker.execute();
                         setFolder.dispose();
-                        changeFolderAccessed(folder + "/" + x);
                     }
                 }
             });
