@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.io.*;
 import java.awt.event.*;
 
@@ -234,7 +235,7 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // MULTITHREADINGGGGGG
-                String alertStr = "Loading...";
+                String alertStr = "0% done";
                 JFrame alertWindow = createAlertWindow(window, alertStr, 100, 50);
                 // window.add(obj);
                 // exit = false;
@@ -243,11 +244,13 @@ public class GUI extends JFrame {
                 SwingWorker swingWorker = new SwingWorker() {
                     @Override
                     protected String doInBackground() throws Exception {
-
                         searchTerm = searchBox.getText().toLowerCase();
                         ArrayList<String> tests = dirNav.getTestNames();
                         System.out.println("Searching");
                         for (int i = 0; i < tests.size() - 1; i++) {
+                            publish((int)((double)i/(double)tests.size()*100));
+                            System.out.println("paper: " + tests.get(i));
+
                             // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
                             // System.out.println(tests);
@@ -314,6 +317,14 @@ public class GUI extends JFrame {
                         // exit = true;
                         return "Finished Execution";
                     }
+
+                    @Override
+                    protected void process(List chunks){
+                        System.out.println(chunks.get(0));
+                        alert.setText(chunks.get(0) + "% finished");
+                        alert.revalidate();
+                        alert.repaint();
+                    }
                 };
                 // Execute search function :)
 
@@ -376,10 +387,10 @@ public class GUI extends JFrame {
         paperPanel.setLayout(new GridLayout(folderNames.length, 1));
         
         for (String x : folderNames) {
-            JLabel paperLink = new JLabel(x);
-            // System.out.println(paperLink.getText());
-            paperLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            paperLink.addMouseListener(new MouseAdapter() {
+            JLabel folderLink = new JLabel(x);
+            // System.out.println(folderLink.getText());
+            folderLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            folderLink.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() > 0) {
                         // System.out.println("DOING STUFF");
@@ -396,8 +407,8 @@ public class GUI extends JFrame {
                 }
             });
 
-            // System.out.println(paperLink.getSize().getHeight());
-            paperPanel.add(paperLink);
+            // System.out.println(folderLink.getSize().getHeight());
+            paperPanel.add(folderLink);
         }
         // if(papers.size() > 19) paperPanel.setSize(400, 190);
         // else paperPanel.setSize(400, papers.size() * 10);
