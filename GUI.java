@@ -19,7 +19,7 @@ public class GUI extends JFrame {
     private static JFrame window;
     private static JLabel alert;
     private static JLabel instructionsLabel;
-    private static FileInputStream instructions;
+    private static InputStream instructions;
 
 
     public GUI() {
@@ -31,9 +31,9 @@ public class GUI extends JFrame {
         try {
             dirNav = new directoryNavigator();
         } catch (NullPointerException e) {
-            System.out.println(e);
+            System.out.println("BEGINNING: " + e);
             // creates a non null dirNav without throwing an error
-            dirNav = new directoryNavigator(false);
+            dirNav = new directoryNavigator(true);
             changeFolderAccessed(dirNav.getHome());
         }
         questions = new HashMap<paper, ArrayList<String>>();
@@ -248,8 +248,9 @@ public class GUI extends JFrame {
                         ArrayList<String> tests = dirNav.getTestNames();
                         System.out.println("Searching");
                         for (int i = 0; i < tests.size() - 1; i++) {
-                            publish((int)((double)i/(double)tests.size()*100));
                             System.out.println("paper: " + tests.get(i));
+                            publish((int)((double)i/(double)tests.size()*100));
+                            System.out.println("Got stuck coming back");
 
                             // System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
@@ -320,10 +321,8 @@ public class GUI extends JFrame {
 
                     @Override
                     protected void process(List chunks){
-                        System.out.println(chunks.get(0));
                         alert.setText(chunks.get(0) + "% finished");
-                        alert.revalidate();
-                        alert.repaint();
+                        System.out.println(chunks.get(0));
                     }
                 };
                 // Execute search function :)
@@ -375,7 +374,7 @@ public class GUI extends JFrame {
 
     }
 
-    public static void changeFolderAccessed(String folder){
+    public void changeFolderAccessed(String folder){
         JFrame setFolder = new JFrame("Currently access from: " + folder);
         setFolder.setLayout(new GridBagLayout());
         GridBagConstraints gBagScroll = createConstraints(0, GridBagConstraints.NORTH, 160);
@@ -436,7 +435,7 @@ public class GUI extends JFrame {
         setFolder.setResizable(false);
     }
 
-    public static JFrame newGUI() {
+    public JFrame newGUI() {
         window = new GUI();
         window.setLayout(new GridLayout(3, 1));
 
@@ -458,8 +457,7 @@ public class GUI extends JFrame {
 
         // ADDING INSTRUCTIONS BUTTON
         
-        try{ instructions = new FileInputStream("README.md"); }
-        catch(FileNotFoundException e) { System.out.println(e); }
+        instructions = getClass().getResourceAsStream("README.md");
         Scanner input = new Scanner(instructions);
         String instructionsStr = "";
         while(input.hasNextLine()){ instructionsStr = instructionsStr + input.nextLine() + "<br>"; }
@@ -539,6 +537,6 @@ public class GUI extends JFrame {
     }
 
     public static void main(String[] args){
-        newGUI();
+        window = new GUI().newGUI();
     }
 }

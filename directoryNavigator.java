@@ -1,5 +1,7 @@
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class directoryNavigator {
@@ -12,13 +14,16 @@ public class directoryNavigator {
     private static String readMeStr;
 
     public directoryNavigator() {
-        readMe = new File("README.md");
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        try{
+            Path temp = Files.createTempFile("readMe-", ".md");
+            Files.copy(classLoader.getResourceAsStream("README.md"), temp, StandardCopyOption.REPLACE_EXISTING);
+            readMe = temp.toFile();
+            
+        } catch(Exception e){ System.out.println(e); }
         home = System.getProperty("user.home");
-        try {
-            readMeStr = Files.readString(readMe.toPath());
-        } catch (IOException e) {
-            System.out.println(e);
-        }
+        try { readMeStr = Files.readString(readMe.toPath()); }
+        catch (IOException e) { System.out.println(e); }
         PATH = home + "/" + readMeStr.substring(readMeStr.indexOf(": ") + 2, readMeStr.indexOf("~"));
         resFolder = new File(PATH);
         if (resFolder.list() == null) {
@@ -28,7 +33,13 @@ public class directoryNavigator {
     }
 
     public directoryNavigator(boolean folderError) {
-        readMe = new File("README.md");
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        try{
+            Path temp = Files.createTempFile("readMe-", ".md");
+            Files.copy(classLoader.getResourceAsStream("README.md"), temp, StandardCopyOption.REPLACE_EXISTING);
+            readMe = temp.toFile();
+
+        } catch(Exception e) {System.out.println("WHOOPSIES: " + e); }
         home = System.getProperty("user.home");
         try { readMeStr = Files.readString(readMe.toPath()); }
         catch (IOException e) { System.out.println(e); }
