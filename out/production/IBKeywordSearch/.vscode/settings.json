@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "pdfbox-app-3.0.0.jar"
-    ]
-}
