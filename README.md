@@ -11,7 +11,7 @@ Right Now the folder it is accessing to get the files are: /Downloads/IBKeywordS
 Next, for those downloading the MacOs application:
 Step 1: Go to this link [Download Link](https://www.java.com/en/)
 Step 2: Follow the instructions [here](https://phoenixnap.com/kb/install-java-macos)
-Step 3: Download the file from this [link](IBKeywordSearch.jar)
+Step 3: Download the file from this [link](IBKeywordSearch-1.0.dmg)
 
 ![Screenshot of change folders tab](/img/changeFolder.png)<br>
 After running the file it will ask for access to the Downloads folder, if you don't give the program access you will need to add the tests to a different folder and then change the location that the program is trying to access the tests from.
