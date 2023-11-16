@@ -1,7 +1,7 @@
 #BlueJ class context
-comment0.target=GUI
+comment0.target=IBKeywordSearch
 comment1.params=
-comment1.target=GUI()
+comment1.target=IBKeywordSearch()
 comment10.params=mainFrame\ str\ width\ height
 comment10.target=javax.swing.JFrame\ createAlertWindow(javax.swing.JFrame,\ java.lang.String,\ int,\ int)
 comment11.params=
