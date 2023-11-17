@@ -13,6 +13,8 @@ Step 1: Go to this link [Download Link](https://www.java.com/en/) <br>
 Step 2: Follow the instructions [here](https://phoenixnap.com/kb/install-java-macos) <br>
 Step 3: Download the file from this [link](IBKeywordSearch-1.0.dmg) <br>
 
+After downloading and moving application to the Applications folder, when attempting to open the application there are a few privacy settings the user must change. If the alert "IBKeywordSearch can't be opened because Apple cannot check for malicious software" shows up go to System Preferences > Privacy & Security. Then scroll to the bottom to the Security section. Find the button that says "Open Anyways" next to this block of text: "IBKeywordSearch was blocked from use because it is not from an identified developer." Afterwards, in order for the program to work it must be given access to folders by the user, this will pop up in the form of an alert saying: "IBKeywordSearch would like access to files in your Downloads folder."
+
 ![Screenshot of change folders tab](/img/changeFolder.png)<br>
 After running the file it will ask for access to the Downloads folder, if you don't give the program access you will need to add the tests to a different folder and then change the location that the program is trying to access the tests from.
 
