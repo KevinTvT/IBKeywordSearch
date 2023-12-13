@@ -111,18 +111,29 @@ public class directoryNavigator {
             folderString = folderString + "/" + withoutHome[x];
         }
         try {
-            if (withoutHome.length > 3)
+            if (withoutHome.length > 3){
                 Files.write(readMe.toPath(), (readMeStr.substring(0, readMeStr.indexOf(": ") + 2) + folderString
                         + readMeStr.substring(readMeStr.indexOf("~"))).getBytes());
-            else
+                System.out.println(readMe.toPath());
+                try { readMeStr = Files.readString(readMe.toPath()); }
+                catch (IOException e) { System.out.println(e); }
+                System.out.println("CHANGED TO: " + folderString);
+            }
+            else{
                 Files.write(readMe.toPath(), (readMeStr.substring(0, readMeStr.indexOf(": ") + 2)
                         + readMeStr.substring(readMeStr.indexOf("~") - 1)).getBytes());
+                System.out.println("RESET FOLDER LOCATION");
+            }
         } catch (IOException e) {
             System.out.println(e);
         }
+        System.out.println(readMe.getPath());
+        try{ Files.copy(readMe.toPath(), new File("README.md").toPath(), StandardCopyOption.REPLACE_EXISTING); }
+        catch(IOException e){ System.out.println(e); }
         resFolder = new File(newResFolder);
+        PATH = resFolder.getPath();
+        // System.out.println(resFolder.getPath());
         curFolder = null;
-        System.out.println("CHANGED TO " + newResFolder);
     }
 
     public String getCurPATH() {

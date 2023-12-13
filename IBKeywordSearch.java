@@ -13,6 +13,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 
 public class IBKeywordSearch extends JFrame {
     private static directoryNavigator dirNav;
+    private static String folderAccessing;
     private static String searchTerm;
     private static String subjectName;
     private static HashMap<paper, ArrayList<String>> questions;
@@ -396,6 +397,7 @@ public class IBKeywordSearch extends JFrame {
                         SwingWorker swingWorker = new SwingWorker(){
                             @Override
                             protected String doInBackground() throws Exception{
+                                folderAccessing = folder + "/" + x;
                                 changeFolderAccessed(folder + "/" + x);
                                 return "Finished Successfully";
                             }
@@ -421,6 +423,8 @@ public class IBKeywordSearch extends JFrame {
             @Override public void actionPerformed(ActionEvent e) {
                 // System.out.println(dirNav.getResFolder().getName());
                 setFolder.dispose();
+                dirNav.setResFolder(folderAccessing);
+                System.out.println(dirNav.getPATH());
                 window.dispose();
                 window = newGUI();
             }
@@ -446,8 +450,7 @@ public class IBKeywordSearch extends JFrame {
 
         // ADDING SUBJECT DROP DOWN STUFF
         ArrayList<String> subjectsList = dirNav.getSubjectNames();
-        String[] subjects = subjectsList.toArray(new String[subjectsList.size()]);
-        JComboBox subjectDropDown = createComboBox(subjects);
+        JComboBox subjectDropDown = createComboBox(subjectsList.toArray(new String[subjectsList.size()]));
         subjectDropDown.setSelectedIndex(0);
         window.add(subjectDropDown);
 
