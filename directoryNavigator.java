@@ -1,8 +1,8 @@
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+
 
 public class directoryNavigator {
 
@@ -12,39 +12,30 @@ public class directoryNavigator {
     private static String PATH;
     private static File readMe;
     private static String readMeStr;
-
-    public directoryNavigator() {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        try{
-            Path temp = Files.createTempFile("readMe-", ".md");
-            Files.copy(classLoader.getResourceAsStream("README.md"), temp, StandardCopyOption.REPLACE_EXISTING);
-            readMe = temp.toFile();
-            
-        } catch(Exception e){ System.out.println(e); }
+    public directoryNavigator(){
         home = System.getProperty("user.home");
-        try { readMeStr = Files.readString(readMe.toPath()); }
-        catch (IOException e) { System.out.println(e); }
-        PATH = home + "/" + readMeStr.substring(readMeStr.indexOf(": ") + 2, readMeStr.indexOf("~"));
-        resFolder = new File(PATH);
-        if (resFolder.list() == null) {
-            System.out.println("EXCEPTION THROWN");
-            throw new NullPointerException("FOLDER NOT FOUND");
+        readMe = new File(home + "/Library/Application Support/IBKeywordSearch/README.md");
+        if(!readMe.exists()){
+            System.out.println("README DOESNT EXIST");
+            try{
+                File IBKeywordSearchDirectory = new File(home + "/Library/Application Support/IBKeywordSearch/");
+                System.out.println(IBKeywordSearchDirectory.mkdir());
+                System.out.println(readMe.createNewFile());   
+                ClassLoader classLoader = this.getClass().getClassLoader();
+                Files.copy(classLoader.getResourceAsStream("README.md"), readMe.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch(IOException e) {e.printStackTrace(); }
         }
-    }
-
-    public directoryNavigator(boolean folderError) {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        try{
-            Path temp = Files.createTempFile("readMe-", ".md");
-            Files.copy(classLoader.getResourceAsStream("README.md"), temp, StandardCopyOption.REPLACE_EXISTING);
-            readMe = temp.toFile();
-
-        } catch(Exception e) {System.out.println("WHOOPSIES: " + e); }
-        home = System.getProperty("user.home");
-        try { readMeStr = Files.readString(readMe.toPath()); }
+        try { readMeStr = Files.readString(readMe.toPath()); 
+              System.out.println(readMeStr); }
         catch (IOException e) { System.out.println(e); }
-        PATH = folderError ? home : home + "/" + readMeStr.substring(readMeStr.indexOf(": ") + 2, readMeStr.indexOf("~"));
+        PATH =  home + "/" + readMeStr.substring(readMeStr.indexOf(": ") + 2, readMeStr.indexOf("~"));
         resFolder = new File(PATH);
+        // System.out.println(resFolder.exists());
+        if(!resFolder.exists()){ 
+            PATH = home;
+            resFolder = new File(PATH);
+        }
+        System.out.println(PATH);
     }
 
     public void main(String[] args) {
@@ -54,7 +45,6 @@ public class directoryNavigator {
     }
 
     public ArrayList<String> getSubjectNames() {
-        System.out.println("PATH: " + resFolder.getPath());
         ArrayList<String> subjectNames = new ArrayList<String>();
         for (File x : resFolder.listFiles()) {
             if (!x.isHidden())
@@ -111,6 +101,7 @@ public class directoryNavigator {
             folderString = folderString + "/" + withoutHome[x];
         }
         try {
+            System.out.println(withoutHome.length);
             if (withoutHome.length > 3){
                 Files.write(readMe.toPath(), (readMeStr.substring(0, readMeStr.indexOf(": ") + 2) + folderString
                         + readMeStr.substring(readMeStr.indexOf("~"))).getBytes());
@@ -127,8 +118,11 @@ public class directoryNavigator {
         } catch (IOException e) {
             System.out.println(e);
         }
-        System.out.println(readMe.getPath());
-        try{ Files.copy(readMe.toPath(), new File("README.md").toPath(), StandardCopyOption.REPLACE_EXISTING); }
+        System.out.println("TEMP PATH: " + readMe.getPath());
+        try{ 
+            Files.copy(readMe.toPath(), new File("README.md").toPath(), StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("\n\nREADME.md: " + new File("README.md").getAbsolutePath() + Files.readString(new File("README.md").toPath()));
+         }
         catch(IOException e){ System.out.println(e); }
         resFolder = new File(newResFolder);
         PATH = resFolder.getPath();

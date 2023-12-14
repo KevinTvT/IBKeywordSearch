@@ -29,14 +29,7 @@ public class IBKeywordSearch extends JFrame {
 
         // setting up directory navigator
         // throws a NUll POINTER EXCEPTION when folder not found
-        try {
             dirNav = new directoryNavigator();
-        } catch (NullPointerException e) {
-            System.out.println("BEGINNING: " + e);
-            // creates a non null dirNav without throwing an error
-            dirNav = new directoryNavigator(true);
-            changeFolderAccessed(dirNav.getHome());
-        }
         questions = new HashMap<paper, ArrayList<String>>();
     }
 
